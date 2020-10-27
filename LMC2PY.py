@@ -1,9 +1,16 @@
+import os
 import re
 import sys
+import ntpath
 
 
 class LMC:
-    def __init__(self, file_path, max_cycles):
+    potential_values = (int(value) for value in sys.argv[2:])
+
+    def __init__(self, _filepath, max_cycles):
+        self.filename = ntpath.basename(file_path)
+        self.inputs = []
+        self.outputs = []
         self.mailboxes = []
         self.calc_reg = 0
         self.neg_flag = 0
@@ -39,15 +46,17 @@ class LMC:
 
         self.setup(file_path)
 
-    def setup(self, file_path):
+    def setup(self, _filepath):
         # checks the extension and converts the file to mailbox machine code
 
         f = open(file_path).readlines()
+        os.chdir(ntpath.dirname(_filepath))
         ext = file_path[-3:]
         if ext == 'lmc':
             self.mailboxes = f[1].split('%')[2].split(',')[:-1]
         elif ext == 'txt':
-            assembly = [[s.strip() for s in re.split('[\t ]',re.sub('#.*','',line))][:3] for line in f if line.strip() != '' and line.strip()[0] != '#']
+            assembly = [[s.strip() for s in re.split('[\t ]', re.sub('#.*', '', line))][:3] for line in f if
+                        line.strip() != '' and line.strip()[0] != '#']
 
             # get pointers
             pointers = {'': ''}
@@ -76,10 +85,16 @@ class LMC:
             self.address_reg = self.counter
             self.counter += 1
             instruction = self.mailboxes[self.address_reg]
-            (self.opcodes[instruction[0]])(int(instruction[1:]))
-        print("Program executed in %d cycles." % self.num_cycles)
+            self.opcodes[instruction[0]](int(instruction[1:]))
 
-    def hlt(self, x):
+        with open(f"feedback_{self.filename}", 'w') as f:
+            msg = (f"Input(s):  {', '.join(str(val) for val in self.inputs)}\n"
+                   f"Output(s): {', '.join(str(val) for val in self.outputs)}\n"
+                   f"Program executed in {self.num_cycles} cycles.")
+            f.write(msg)
+            print(msg)
+
+    def hlt(self, _x):
         self.halted = 1
 
     def add(self, x):
@@ -113,12 +128,19 @@ class LMC:
     def in_out(self, x):
         if x == 1:
             self.neg_flag = 0
-            self.calc_reg = int(input('Enter value'))
-        if x == 2:
-            print(self.calc_reg)
+            self.calc_reg = next(self.potential_values, None)
+            if self.calc_reg is None:
+                self.calc_reg = int(input("Enter value: "))
+            self.inputs.append(self.calc_reg)
+        elif x == 2:
+            self.outputs.append(self.calc_reg)
 
 
-file_path = ''
+if len(sys.argv) > 1:
+    file_path = sys.argv[1]
+else:
+    file_path = input("Enter path: ")
+
 lmc = LMC(file_path, 50000)
-lmc.print_mailboxes()
+# lmc.print_mailboxes()
 lmc.run_program()
