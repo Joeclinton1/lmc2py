@@ -1,8 +1,12 @@
+import re
+import sys
+
+
 class LMC:
-    def __init__(self, filepath, max_cycles):
+    def __init__(self, file_path, max_cycles):
+        self.mailboxes = []
         self.calc_reg = 0
         self.neg_flag = 0
-        self.mailboxes = open(filepath).readlines()[1].split('%')[2].split(',')[:-1]
         self.counter = 0
         self.max_cycles = max_cycles
         self.num_cycles = 0
@@ -19,6 +23,49 @@ class LMC:
             '8': self.brp,
             '9': self.in_out,
         }
+
+        self.assembly_codes = {
+            'HLT': '000',
+            'ADD': '1',
+            'SUB': '2',
+            'STO': '3',
+            'LDA': '5',
+            'BR': '6',
+            'BRZ': '7',
+            'BRP': '8',
+            'IN': '901',
+            'OUT': '902'
+        }
+
+        self.setup(file_path)
+
+    def setup(self, file_path):
+        # checks the extension and converts the file to mailbox machine code
+
+        f = open(file_path).readlines()
+        ext = file_path[-3:]
+        if ext == 'lmc':
+            self.mailboxes = f[1].split('%')[2].split(',')[:-1]
+        elif ext == 'txt':
+            assembly = [[s.strip() for s in re.split('[\t ]',re.sub('#.*','',line))][:3] for line in f if line.strip() != '' and line.strip()[0] != '#']
+
+            # get pointers
+            pointers = {'': ''}
+            for box_num, cmd in enumerate(assembly):
+                if cmd[0] != '':
+                    pointers[cmd[0]] = str(box_num)
+
+            # convert assembly to machine code
+            for cmd in assembly:
+                opcode = cmd[1]
+                val = cmd[2] if len(cmd) == 3 else ''
+                if opcode == 'DAT':
+                    machine_code = '000' if val == '' else val
+                else:
+                    machine_code = self.assembly_codes[opcode] + pointers[val]
+                self.mailboxes.append(machine_code)
+        else:
+            sys.exit('LMC2PY requires a .lmc or assembly .txt file.')
 
     def print_mailboxes(self):
         print(self.mailboxes)
