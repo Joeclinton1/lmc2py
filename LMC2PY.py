@@ -12,7 +12,7 @@ class LMC:
         self.inputs = []
         self.outputs = []
         self.mailboxes = []
-        self.calc_reg = 0
+        self.accumulator = 0
         self.neg_flag = 0
         self.counter = 0
         self.max_cycles = max_cycles
@@ -99,26 +99,26 @@ class LMC:
 
     def add(self, x):
         n = int(self.mailboxes[x])
-        self.calc_reg = (self.calc_reg + n) % 1000
+        self.accumulator = (self.accumulator + n) % 1000
 
     def sub(self, x):
         n = int(self.mailboxes[x])
-        if n > self.calc_reg:
+        if n > self.accumulator:
             self.neg_flag = 1
-        self.calc_reg = (self.calc_reg - n) % 1000
+        self.accumulator = (self.accumulator - n) % 1000
 
     def sto(self, x):
-        self.mailboxes[x] = str(self.calc_reg)
+        self.mailboxes[x] = str(self.accumulator)
 
     def lda(self, x):
         self.neg_flag = 0
-        self.calc_reg = int(self.mailboxes[x])
+        self.accumulator = int(self.mailboxes[x])
 
     def br(self, x):
         self.counter = x
 
     def brz(self, x):
-        if self.calc_reg == 0:
+        if self.accumulator == 0:
             self.counter = x
 
     def brp(self, x):
@@ -128,12 +128,12 @@ class LMC:
     def in_out(self, x):
         if x == 1:
             self.neg_flag = 0
-            self.calc_reg = next(self.potential_values, None)
-            if self.calc_reg is None:
-                self.calc_reg = int(input("Enter value: "))
-            self.inputs.append(self.calc_reg)
+            self.accumulator = next(self.potential_values, None)
+            if self.accumulator is None:
+                self.accumulator = int(input("Enter value: "))
+            self.inputs.append(self.accumulator)
         elif x == 2:
-            self.outputs.append(self.calc_reg)
+            self.outputs.append(self.accumulator)
 
 
 if len(sys.argv) > 1:
