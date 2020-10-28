@@ -7,9 +7,26 @@ import argparse
 # streamlining the CLI
 parser = argparse.ArgumentParser(usage='%(prog)s [-h] file [options]', description="this is a single file python script which runs the 'Little Minion Computer' .lmc and .txt files in python, to save you having to wait for it to run")
 parser.add_argument("file", help="the file to execute; can be either LMC assembly (.txt or .asm) or compiled LMC machine code (.lmc)")
-# not implemented yet - multiple -i arguments come first
-# parser.add_argument("-b", "--batch", help="a batch process file to test the program against")
-parser.add_argument("-i", "--input", nargs="*", metavar="VAL", help="one or more inputs to supply to the program, in order")
+
+# input arguments
+igroup = parser.add_mutually_exclusive_group()
+igroup.add_argument("-a", "--all", action="store_true", help="run the program for all inputs between 0 and 999 (recommend also using -q)")
+# not implemented yet
+# group.add_argument("-b", "--batch", help="a batch process file to test the program against")
+igroup.add_argument("-i", "--input", nargs="*", metavar="VAL", help="one or more inputs to supply to the program, in order")
+
+# verbosity arguments
+vgroup = parser.add_mutually_exclusive_group()
+vgroup.add_argument("-v", "--verbose", action="store_true", help="run the program with high verbosity")
+vgroup.add_argument("-q", "--quiet", action="store_true", help="run the program with minimum terminal output; setting this flag without one of the following will result in no output at all")
+
+# output arguments
+# not implemented yet
+# parser.add_argument("-o", "--compile", nargs="?", default=None, const="", metavar="FILE", help="output the compiled LMC machine code to a file")
+# not implemented yet
+# parser.add_argument("-c", "--csv", nargs="?", default=None, const="", metavar="FILE", help="save the process results to a .csv file")
+parser.add_argument("-f", "--feedback", nargs="?", default=None, const="", metavar="FILE", help="save the process results to a .txt file")
+
 args = parser.parse_args()
 
 class LMC:
@@ -26,6 +43,7 @@ class LMC:
         self.potential_values = potential_values
         self.max_cycles = max_cycles
         self.num_cycles = 0
+        self.total_cycles = 0
         self.address_reg = 0
         self.halted = 0
         self.opcodes = {
@@ -114,11 +132,14 @@ class LMC:
             instruction = self.mailboxes[self.address_reg]
             self.opcodes[instruction[0]](int(instruction[1:]))
         
+        self.total_cycles += self.num_cycles
         msg = (f"Input(s):  {', '.join(str(val) for val in self.inputs)}\n"
                f"Output(s): {', '.join(str(val) for val in self.outputs)}\n"
-               f"Program executed in {self.num_cycles} cycles.\n")
+               f"Program executed in {self.num_cycles} cycles, cumulative {self.total_cycles}.\n")
+
         self.feedback += msg
-        print(msg)
+        if not args.quiet:
+            print(msg)
 
     def reset(self):
         # reset all registers (but not mailboxes)
@@ -132,9 +153,10 @@ class LMC:
         self.halted = 0
 
     def write_feedback(self):
-        # write feedback to a file
-        with open(f"feedback_{self.filename}", 'w') as f:
-            f.write(self.feedback)
+        # write feedback to a txt file
+        if args.feedback != None:
+            with open(args.feedback or f"feedback_{self.filename}", 'w') as f:
+                f.write(self.feedback)
 
     def hlt(self, _x):
         self.halted = 1
@@ -180,10 +202,14 @@ class LMC:
 
 file_path = args.file
 
-# moved this out here to avoid parsing args inside the class
-# in case we ever want more than one instance of it
+# moved this out here to avoid parsing args inside the class as much as possible
 # also, as much as I like the generator syntax, I need to be able to see if there's any left
-potential_values = [int(value) % 1000 for value in (args.input or [])]
+if args.input != None:
+    potential_values = [int(value) % 1000 for value in args.input]
+elif args.all:
+    potential_values = [value for value in range(1000)]
+else:
+    potential_values = []
 
 lmc = LMC(file_path, potential_values, 50000)
 # lmc.print_mailboxes()
