@@ -55,7 +55,7 @@ class LMC:
         if ext == 'lmc':
             self.mailboxes = f[1].split('%')[2].split(',')[:-1]
         elif ext == 'txt':
-            assembly = [[s.strip() for s in re.split('[\t ]', re.sub('#.*', '', line))][:3] for line in f if
+            assembly = [[s.strip() for s in re.split('\\s+', re.sub('#.*', '', line))][:3] for line in f if
                         line.strip() != '' and line.strip()[0] != '#']
 
             # get pointers
@@ -69,9 +69,11 @@ class LMC:
                 opcode = cmd[1]
                 val = cmd[2] if len(cmd) == 3 else ''
                 if opcode == 'DAT':
-                    machine_code = '000' if val == '' else val
+                    machine_code = '000' if val == '' else val.zfill(3)
+                elif opcode in ["IN","OUT","HLT"]:
+                    machine_code = self.assembly_codes[opcode]
                 else:
-                    machine_code = self.assembly_codes[opcode] + pointers[val]
+                    machine_code = self.assembly_codes[opcode] + pointers[val].zfill(2)
                 self.mailboxes.append(machine_code)
         else:
             sys.exit('LMC2PY requires a .lmc or assembly .txt file.')
