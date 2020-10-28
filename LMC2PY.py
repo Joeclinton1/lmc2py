@@ -2,10 +2,18 @@ import os
 import re
 import sys
 import ntpath
+import argparse
 
+# streamlining the CLI
+parser = argparse.ArgumentParser(usage='%(prog)s [-h] file [options]', description="this is a single file python script which runs the 'Little Minion Computer' .lmc and .txt files in python, to save you having to wait for it to run")
+parser.add_argument("file", help="the file to execute; can be either LMC assembly (.txt or .asm) or compiled LMC machine code (.lmc)")
+# this one isn't implemented yet
+# parser.add_argument("-t", "--test", help="a file to test the program against")
+parser.add_argument("-i", "--input", nargs="*", metavar="VAL", help="one or more inputs to supply to the program, in order")
+args = parser.parse_args()
 
 class LMC:
-    potential_values = (int(value) for value in sys.argv[2:])
+    potential_values = (int(value) % 1000 for value in (args.input or []))
 
     def __init__(self, _filepath, max_cycles):
         self.filename = ntpath.basename(file_path)
@@ -52,10 +60,10 @@ class LMC:
         f = open(file_path).readlines()
         os.chdir(ntpath.dirname(_filepath) or '.')
         ext = file_path[-3:]
-        if ext == 'lmc':
+        if ext.lower() == 'lmc':
             self.mailboxes = f[1].split('%')[2].split(',')[:-1]
-        elif ext == 'txt':
-            assembly = [[s.strip() for s in re.split('[\t ]', re.sub('#.*', '', line))][:3] for line in f if
+        elif ext.lower() in ['txt','asm']:
+            assembly = [[s.strip() for s in re.split('\\s+', re.sub('#.*', '', line))][:3] for line in f if
                         line.strip() != '' and line.strip()[0] != '#']
 
             # get pointers
@@ -69,12 +77,14 @@ class LMC:
                 opcode = cmd[1]
                 val = cmd[2] if len(cmd) == 3 else ''
                 if opcode == 'DAT':
-                    machine_code = '000' if val == '' else val
+                    machine_code = '000' if val == '' else val.zfill(3)
+                elif opcode in ["IN","OUT","HLT"]:
+                    machine_code = self.assembly_codes[opcode]
                 else:
-                    machine_code = self.assembly_codes[opcode] + pointers[val]
+                    machine_code = self.assembly_codes[opcode] + pointers[val].zfill(2)
                 self.mailboxes.append(machine_code)
         else:
-            sys.exit('LMC2PY requires a .lmc or assembly .txt file.')
+            sys.exit('LMC2PY requires a .lmc or assembly .txt or .asm file.')
 
     def print_mailboxes(self):
         print(self.mailboxes)
@@ -130,16 +140,13 @@ class LMC:
             self.neg_flag = 0
             self.accumulator = next(self.potential_values, None)
             if self.accumulator is None:
-                self.accumulator = int(input("Enter value: "))
+                self.accumulator = int(input("Enter value: ")) % 1000
             self.inputs.append(self.accumulator)
         elif x == 2:
             self.outputs.append(self.accumulator)
 
 
-if len(sys.argv) > 1:
-    file_path = sys.argv[1]
-else:
-    file_path = input("Enter path: ")
+file_path = args.file
 
 lmc = LMC(file_path, 50000)
 # lmc.print_mailboxes()
