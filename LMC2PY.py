@@ -50,7 +50,7 @@ class LMC:
         # checks the extension and converts the file to mailbox machine code
 
         f = open(file_path).readlines()
-        os.chdir(ntpath.dirname(_filepath))
+        os.chdir(ntpath.dirname(_filepath) or '.')
         ext = file_path[-3:]
         if ext == 'lmc':
             self.mailboxes = f[1].split('%')[2].split(',')[:-1]
