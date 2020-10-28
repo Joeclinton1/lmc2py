@@ -5,7 +5,7 @@ import ntpath
 
 
 class LMC:
-    potential_values = (int(value) for value in sys.argv[2:])
+    potential_values = (int(value) % 1000 for value in sys.argv[2:])
 
     def __init__(self, _filepath, max_cycles):
         self.filename = ntpath.basename(file_path)
@@ -52,9 +52,9 @@ class LMC:
         f = open(file_path).readlines()
         os.chdir(ntpath.dirname(_filepath) or '.')
         ext = file_path[-3:]
-        if ext == 'lmc':
+        if ext.lower() == 'lmc':
             self.mailboxes = f[1].split('%')[2].split(',')[:-1]
-        elif ext == 'txt':
+        elif ext.lower() in ['txt','asm']:
             assembly = [[s.strip() for s in re.split('\\s+', re.sub('#.*', '', line))][:3] for line in f if
                         line.strip() != '' and line.strip()[0] != '#']
 
@@ -76,7 +76,7 @@ class LMC:
                     machine_code = self.assembly_codes[opcode] + pointers[val].zfill(2)
                 self.mailboxes.append(machine_code)
         else:
-            sys.exit('LMC2PY requires a .lmc or assembly .txt file.')
+            sys.exit('LMC2PY requires a .lmc or assembly .txt or .asm file.')
 
     def print_mailboxes(self):
         print(self.mailboxes)
@@ -132,7 +132,7 @@ class LMC:
             self.neg_flag = 0
             self.accumulator = next(self.potential_values, None)
             if self.accumulator is None:
-                self.accumulator = int(input("Enter value: "))
+                self.accumulator = int(input("Enter value: ")) % 1000
             self.inputs.append(self.accumulator)
         elif x == 2:
             self.outputs.append(self.accumulator)
