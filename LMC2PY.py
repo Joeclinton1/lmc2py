@@ -2,10 +2,18 @@ import os
 import re
 import sys
 import ntpath
+import argparse
 
+# streamlining the CLI
+parser = argparse.ArgumentParser(usage='%(prog)s [-h] file [options]', description="this is a single file python script which runs the 'Little Minion Computer' .lmc and .txt files in python, to save you having to wait for it to run")
+parser.add_argument("file", help="the file to execute; can be either LMC assembly (.txt or .asm) or compiled LMC machine code (.lmc)")
+# this one isn't implemented yet
+# parser.add_argument("-t", "--test", help="a file to test the program against")
+parser.add_argument("-i", "--input", nargs="*", metavar="VAL", help="one or more inputs to supply to the program, in order")
+args = parser.parse_args()
 
 class LMC:
-    potential_values = (int(value) % 1000 for value in sys.argv[2:])
+    potential_values = (int(value) % 1000 for value in (args.input or []))
 
     def __init__(self, _filepath, max_cycles):
         self.filename = ntpath.basename(file_path)
@@ -138,10 +146,7 @@ class LMC:
             self.outputs.append(self.accumulator)
 
 
-if len(sys.argv) > 1:
-    file_path = sys.argv[1]
-else:
-    file_path = input("Enter path: ")
+file_path = args.file
 
 lmc = LMC(file_path, 50000)
 # lmc.print_mailboxes()
