@@ -43,6 +43,7 @@ class LMC:
         self.potential_values = potential_values
         self.max_cycles = max_cycles
         self.num_cycles = 0
+        self.total_cycles = 0
         self.address_reg = 0
         self.halted = 0
         self.opcodes = {
@@ -131,9 +132,11 @@ class LMC:
             instruction = self.mailboxes[self.address_reg]
             self.opcodes[instruction[0]](int(instruction[1:]))
         
+        self.total_cycles += self.num_cycles
         msg = (f"Input(s):  {', '.join(str(val) for val in self.inputs)}\n"
                f"Output(s): {', '.join(str(val) for val in self.outputs)}\n"
-               f"Program executed in {self.num_cycles} cycles.\n")
+               f"Program executed in {self.num_cycles} cycles, cumulative {self.total_cycles}.\n")
+
         self.feedback += msg
         if not args.quiet:
             print(msg)
