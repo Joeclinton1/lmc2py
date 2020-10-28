@@ -7,22 +7,23 @@ import argparse
 # streamlining the CLI
 parser = argparse.ArgumentParser(usage='%(prog)s [-h] file [options]', description="this is a single file python script which runs the 'Little Minion Computer' .lmc and .txt files in python, to save you having to wait for it to run")
 parser.add_argument("file", help="the file to execute; can be either LMC assembly (.txt or .asm) or compiled LMC machine code (.lmc)")
-# this one isn't implemented yet
-# parser.add_argument("-t", "--test", help="a file to test the program against")
+# not implemented yet - multiple -i arguments come first
+# parser.add_argument("-b", "--batch", help="a batch process file to test the program against")
 parser.add_argument("-i", "--input", nargs="*", metavar="VAL", help="one or more inputs to supply to the program, in order")
 args = parser.parse_args()
 
 class LMC:
-    potential_values = (int(value) % 1000 for value in (args.input or []))
 
-    def __init__(self, _filepath, max_cycles):
-        self.filename = ntpath.basename(file_path)
+    def __init__(self, _filepath, potential_values, max_cycles=50000):
+        self.filename = ntpath.basename(_filepath)
         self.inputs = []
         self.outputs = []
+        self.feedback = ""
         self.mailboxes = []
         self.accumulator = 0
         self.neg_flag = 0
         self.counter = 0
+        self.potential_values = potential_values
         self.max_cycles = max_cycles
         self.num_cycles = 0
         self.address_reg = 0
@@ -52,12 +53,12 @@ class LMC:
             'OUT': '902'
         }
 
-        self.setup(file_path)
+        self.setup(_filepath)
 
     def setup(self, _filepath):
         # checks the extension and converts the file to mailbox machine code
 
-        f = open(file_path).readlines()
+        f = open(_filepath).readlines()
         os.chdir(ntpath.dirname(_filepath) or '.')
         ext = file_path[-3:]
         if ext.lower() == 'lmc':
@@ -89,6 +90,22 @@ class LMC:
     def print_mailboxes(self):
         print(self.mailboxes)
 
+    def run_batch(self):
+        if len(self.potential_values) == 0:
+            self.run_once()
+
+        # run the program repeatedly for multiple input values
+        while len(self.potential_values) > 0:
+            self.run_program()
+            self.reset()
+
+        self.write_feedback()
+
+    def run_once(self):
+        # run the program once, without resetting
+        self.run_program()
+        self.write_feedback()
+
     def run_program(self):
         while self.num_cycles <= self.max_cycles and not self.halted:
             self.num_cycles += 1
@@ -96,13 +113,28 @@ class LMC:
             self.counter += 1
             instruction = self.mailboxes[self.address_reg]
             self.opcodes[instruction[0]](int(instruction[1:]))
+        
+        msg = (f"Input(s):  {', '.join(str(val) for val in self.inputs)}\n"
+               f"Output(s): {', '.join(str(val) for val in self.outputs)}\n"
+               f"Program executed in {self.num_cycles} cycles.\n")
+        self.feedback += msg
+        print(msg)
 
+    def reset(self):
+        # reset all registers (but not mailboxes)
+        self.inputs = []
+        self.outputs = []
+        self.accumulator = 0
+        self.neg_flag = 0
+        self.counter = 0
+        self.num_cycles = 0
+        self.address_reg = 0
+        self.halted = 0
+
+    def write_feedback(self):
+        # write feedback to a file
         with open(f"feedback_{self.filename}", 'w') as f:
-            msg = (f"Input(s):  {', '.join(str(val) for val in self.inputs)}\n"
-                   f"Output(s): {', '.join(str(val) for val in self.outputs)}\n"
-                   f"Program executed in {self.num_cycles} cycles.")
-            f.write(msg)
-            print(msg)
+            f.write(self.feedback)
 
     def hlt(self, _x):
         self.halted = 1
@@ -138,7 +170,7 @@ class LMC:
     def in_out(self, x):
         if x == 1:
             self.neg_flag = 0
-            self.accumulator = next(self.potential_values, None)
+            self.accumulator = (self.potential_values or [None]).pop(0)
             if self.accumulator is None:
                 self.accumulator = int(input("Enter value: ")) % 1000
             self.inputs.append(self.accumulator)
@@ -148,6 +180,11 @@ class LMC:
 
 file_path = args.file
 
-lmc = LMC(file_path, 50000)
+# moved this out here to avoid parsing args inside the class
+# in case we ever want more than one instance of it
+# also, as much as I like the generator syntax, I need to be able to see if there's any left
+potential_values = [int(value) % 1000 for value in (args.input or [])]
+
+lmc = LMC(file_path, potential_values, 50000)
 # lmc.print_mailboxes()
-lmc.run_program()
+lmc.run_batch()
