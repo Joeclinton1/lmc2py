@@ -19,12 +19,12 @@ This behaviour can be changed by the use of optional flags, which are put in pla
 
 ```python lmc2py.py code.lmc -i 997```
 
-`-h`, `--help`: displays this list of options, instead of doing anything else. A source file is not needed in this case.
-`-a`, `--all`: executes the program once for each value between 0 and 999.
-`-i [VAL]`, `--input [VAL]`: executes the program once for each VAL given. Multiple inputs can be given as a list, like `-i 840 961 997`.
-`-q`, `--quiet`: executes the program without any terminal output, except errors. If you use this flag without any output flags, the program may not return anything.
-`-f [FILE]`, `--feedback [FILE]`: save the results of the program to a text file. If no FILE is specified, this will be a file in the source file's directory called feedback_\<filename\>.
-`-ch CHECKER`, `--checker CHECKER`: run a checker function from a python file with the same inputs as the LMC code, to show the expected output. Some example checker functions are included in `checks/`.
+- `-h`, `--help`: displays this list of options, instead of doing anything else. A source file is not needed in this case.
+- `-a`, `--all`: executes the program once for each value between 0 and 999.
+- `-i [VAL]`, `--input [VAL]`: executes the program once for each VAL given. Multiple inputs can be given as a list, like `-i 840 961 997`.
+- `-q`, `--quiet`: executes the program without any terminal output, except errors. If you use this flag without any output flags, the program may not return anything.
+- `-f [FILE]`, `--feedback [FILE]`: save the results of the program to a text file. If no FILE is specified, this will be a file in the source file's directory called feedback_\<filename\>.
+- `-ch CHECKER`, `--checker CHECKER`: run a checker function from a python file with the same inputs as the LMC code, to show the expected output and see if your program's output matches. Some example checker functions are included in `checks/`.
 
 ### Something to consider
 
