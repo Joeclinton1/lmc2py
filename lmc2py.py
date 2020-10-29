@@ -90,9 +90,9 @@ class LMC:
 
         # read checker file
         if checker_file_path:
-            os.chdir(os.path.dirname(__file__))
+            checker_name = ntpath.basename(checker_file_path)
             #abs_path = os.path.abspath(checker_file_path)
-            spec = importlib.util.spec_from_file_location("divisors.py", checker_file_path)
+            spec = importlib.util.spec_from_file_location(checker_name, checker_file_path)
             foo = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(foo)
             self.checker = foo.checker
