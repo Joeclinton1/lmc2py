@@ -3,6 +3,7 @@ import ntpath
 import sys
 import os
 import re
+import plot
 
 
 class LMC:
@@ -12,6 +13,7 @@ class LMC:
         self.filename = ntpath.basename(_filepath)
         self.inputs = []
         self.outputs = []
+        self.inputs_and_cycles = {}
         self.feedback = ""
         self.mailboxes = []
         self.accumulator = 0
@@ -118,6 +120,9 @@ class LMC:
                     print("inputs: %s, expected_output: %s, output: %s" % (inputs, expected_outputs, outputs))
         self.write_feedback()
 
+        if self.args.graph:
+            plot.plot_graph(self.inputs_and_cycles)
+
     def run_once(self):
         # run the program once, without resetting
         self.run_program()
@@ -145,6 +150,15 @@ class LMC:
                f"Actual Output(s):\t{', '.join(str(val) for val in self.outputs)}\n"
                f"Program executed in {self.num_cycles} cycles, cumulative {self.total_cycles}.\n\n")
         self.feedback += msg
+
+        # matches inputs with number of cycles taken for that input
+        if not self.inputs:
+            pass
+        elif len(self.inputs) == 1:
+            self.inputs_and_cycles[self.inputs[0]] = self.num_cycles
+        else:
+            self.inputs_and_cycles[tuple(self.inputs)] = self.num_cycles
+
         if not self.args.quiet:
             print(msg)
 
