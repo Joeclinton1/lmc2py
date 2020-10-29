@@ -7,6 +7,7 @@ This is a single file python script which runs the "Little Minion Computer" .lmc
 - Test program against multiple inputs at once.
 - Test program against all inputs.
 - Check program outputs expected output.
+- Output graph of inputs vs F/E cycles for an easy visualisation of your programs efficiency.
 
 ## Usage
 
