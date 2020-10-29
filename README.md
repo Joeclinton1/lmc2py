@@ -6,4 +6,4 @@ This is a single file python script which runs the "Little Minion Computer" .lmc
 - Interprets LMC assembly and .LMC files to python
 - Test program against multiple inputs at once.
 - Test program against all inputs.
-- Check if program passes tests.
+- Check program outputs expected output.
