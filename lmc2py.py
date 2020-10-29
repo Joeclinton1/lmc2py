@@ -1,5 +1,5 @@
 from parsing import args
-from lmc import LMC
+from lmc_wrapper import LMCWrapper
 
 
 filepath = args.file
@@ -12,6 +12,6 @@ elif args.all:
 else:
     potential_values = []
 
-lmc = LMC(filepath, potential_values, 50000, checker_filepath, args)
+lmc_wrapper = LMCWrapper(filepath, potential_values, 50000, checker_filepath, args)
 # lmc.print_mailboxes()
-lmc.run_batch()
+lmc_wrapper.run_batch()
