@@ -4,6 +4,7 @@ import sys
 import os
 import re
 from lmc import LMC
+import plot
 
 
 class LMCWrapper:
@@ -14,6 +15,7 @@ class LMCWrapper:
         self.filename = ntpath.basename(_filepath)
         self.inputs = []
         self.outputs = []
+        self.inputs_and_cycles = {}
         self.feedback = ""
         self.mailboxes = []
         self.accumulator = 0
@@ -115,6 +117,9 @@ class LMCWrapper:
                     print("inputs: %s, expected_output: %s, output: %s" % (inputs, expected_outputs, outputs))
         self.write_feedback()
 
+        if self.args.graph:
+            plot.plot_graph(self.inputs_and_cycles)
+
     def run_once(self):
         # run the program once, without resetting
         self.run_program()
@@ -124,7 +129,7 @@ class LMCWrapper:
         inputs, outputs, num_cycles = self.lmc.run_cycles()
         self.lmc.reset()
         self.total_cycles += self.num_cycles
-        self.store_feedback_msg(inputs,outputs, num_cycles)
+        self.store_feedback_msg(inputs, outputs, num_cycles)
 
     def store_feedback_msg(self, inputs, outputs, num_cycles):
         expect_output_msg = ''
@@ -139,6 +144,13 @@ class LMCWrapper:
                f"Actual Output(s):\t{', '.join(str(val) for val in outputs)}\n"
                f"Program executed in {num_cycles} cycles, cumulative {self.total_cycles}.\n\n")
         self.feedback += msg
+
+        # matches inputs with number of cycles taken for that input
+        if len(inputs) == 1:
+            self.inputs_and_cycles[inputs[0]] = num_cycles
+        elif len(inputs) > 1:
+            self.inputs_and_cycles[tuple(inputs)] = num_cycles
+
         if not self.args.quiet:
             print(msg)
 
