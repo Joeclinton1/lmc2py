@@ -39,5 +39,5 @@ parser.add_argument("-f", "--feedback", nargs="?", default=None, const="", metav
 parser.add_argument("-ch", "--checker", help="filepath to file containing checker function")
 
 parser.add_argument("-g", "--graph", action="store_true",
-                    help="generate graph matching input to number of cycles")
+                    help="generate scatter graph matching input to number of cycles")
 args = parser.parse_args()
