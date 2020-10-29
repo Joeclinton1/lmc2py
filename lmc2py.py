@@ -3,35 +3,40 @@ import re
 import sys
 import ntpath
 import argparse
-from importlib import import_module
 import importlib.util
 
 # streamlining the CLI
-parser = argparse.ArgumentParser(usage='%(prog)s [-h] file [options]',
-                                 description="this is a single file python script which runs the 'Little Minion Computer' .lmc and .txt files in python, to save you having to wait for it to run")
-parser.add_argument("file",
-                    help="the file to execute; can be either LMC assembly (.txt or .asm) or compiled LMC machine code (.lmc)")
+parser = argparse.ArgumentParser(
+    usage='%(prog)s [-h] file [options]',
+    description="this is a single file python script which runs the 'Little Minion Computer' "
+                ".lmc and .txt files in python, to save you having to wait for it to run")
 
-# input arguments
-igroup = parser.add_mutually_exclusive_group()
-igroup.add_argument("-a", "--all", action="store_true",
-                    help="run the program for all inputs between 0 and 999 (recommend also using -q)")
-# not implemented yet
-# group.add_argument("-b", "--batch", help="a batch process file to test the program against")
-igroup.add_argument("-i", "--input", nargs="*", metavar="VAL",
-                    help="one or more inputs to supply to the program, in order")
+parser.add_argument("file",
+                    help="the file to execute; can be either LMC assembly (.txt or .asm) "
+                         "or compiled LMC machine code (.lmc)")
+
+# input arguments; commented code is not yet implemented
+i_group = parser.add_mutually_exclusive_group()
+i_group.add_argument("-a", "--all", action="store_true",
+                     help="run the program for all inputs between 0 and 999 (recommend also using -q)")
+# i_group.add_argument("-b", "--batch",
+#                      help="a batch process file to test the program against")
+i_group.add_argument("-i", "--input", nargs="*", metavar="VAL",
+                     help="one or more inputs to supply to the program, in order")
 
 # verbosity arguments
-vgroup = parser.add_mutually_exclusive_group()
-vgroup.add_argument("-v", "--verbose", action="store_true", help="run the program with high verbosity")
-vgroup.add_argument("-q", "--quiet", action="store_true",
-                    help="run the program with minimum terminal output; setting this flag without one of the following will result in no output at all")
+v_group = parser.add_mutually_exclusive_group()
+v_group.add_argument("-v", "--verbose", action="store_true",
+                     help="run the program with high verbosity")
+v_group.add_argument("-q", "--quiet", action="store_true",
+                     help="run the program with minimum terminal output; setting this flag without one of the "
+                          "following will result in no output at all")
 
-# output arguments
-# not implemented yet
-# parser.add_argument("-o", "--compile", nargs="?", default=None, const="", metavar="FILE", help="output the compiled LMC machine code to a file")
-# not implemented yet
-# parser.add_argument("-c", "--csv", nargs="?", default=None, const="", metavar="FILE", help="save the process results to a .csv file")
+# output arguments; commented code is not yet implemented
+# parser.add_argument("-o", "--compile", nargs="?", default=None, const="", metavar="FILE",
+#                     help="output the compiled LMC machine code to a file")
+# parser.add_argument("-c", "--csv", nargs="?", default=None, const="", metavar="FILE",
+#                     help="save the process results to a .csv file")
 parser.add_argument("-f", "--feedback", nargs="?", default=None, const="", metavar="FILE",
                     help="save the process results to a .txt file")
 
@@ -40,8 +45,8 @@ args = parser.parse_args()
 
 
 class LMC:
-
-    def __init__(self, _filepath, potential_values, max_cycles=50000, checker_file_path=None):
+    def __init__(self, _filepath, _potential_values, max_cycles=50000, _checker_filepath=None, args=None):
+        self.args = args
         self.checker = None
         self.filename = ntpath.basename(_filepath)
         self.inputs = []
@@ -51,7 +56,7 @@ class LMC:
         self.accumulator = 0
         self.neg_flag = 0
         self.counter = 0
-        self.potential_values = potential_values
+        self.potential_values = _potential_values
         self.max_cycles = max_cycles
         self.num_cycles = 0
         self.total_cycles = 0
@@ -83,16 +88,16 @@ class LMC:
             'OUT': '902'
         }
 
-        self.setup(_filepath, checker_file_path)
+        self.setup(_filepath, _checker_filepath)
 
-    def setup(self, _filepath, checker_file_path):
+    def setup(self, _filepath, _checker_filepath):
         # checks the extension and converts the file to mailbox machine code
 
         # read checker file
-        if checker_file_path:
+        if _checker_filepath:
             os.chdir(os.path.dirname(__file__))
-            #abs_path = os.path.abspath(checker_file_path)
-            spec = importlib.util.spec_from_file_location("divisors.py", checker_file_path)
+            # abs_path = os.path.abspath(checker_file_path)
+            spec = importlib.util.spec_from_file_location("divisors.py", _checker_filepath)
             foo = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(foo)
             self.checker = foo.checker
@@ -101,12 +106,12 @@ class LMC:
         f = open(_filepath).readlines()
         os.chdir(ntpath.dirname(_filepath) or '.')
 
-        ext = file_path[-3:]
+        ext = _filepath[-3:]
         if ext.lower() == 'lmc':
             self.mailboxes = f[1].split('%')[2].split(',')[:-1]
         elif ext.lower() in ['txt', 'asm']:
-            assembly = [[s.strip() for s in re.split('\\s+', re.sub('#.*', '', line))][:3] for line in f if
-                        line.strip() != '' and line.strip()[0] != '#']
+            assembly = [[s.strip() for s in re.split('\\s+', re.sub('#.*', '', line))][:3]
+                        for line in f if line.strip() != '' and line.strip()[0] != '#']
 
             # get pointers
             pointers = {'': ''}
@@ -144,7 +149,7 @@ class LMC:
             if len(self.unexpected_outputs) == 0:
                 print("The program passed all tests.")
             else:
-                print("The program failed %d tests."%len(self.unexpected_outputs))
+                print("The program failed %d tests." % len(self.unexpected_outputs))
                 for inputs, expected_outputs, outputs in self.unexpected_outputs:
                     inputs = ', '.join(str(val) for val in inputs)
                     expected_outputs = ', '.join(str(val) for val in expected_outputs)
@@ -170,16 +175,16 @@ class LMC:
         expect_output_msg = ''
         if self.checker:
             expected_outputs = self.checker(self.inputs)
-            expect_output_msg = f"Expected Outputs(s):  {', '.join(str(val) for val in expected_outputs)}\n"
+            expect_output_msg = f"Expected Outputs(s):\t{', '.join(str(val) for val in expected_outputs)}"
             if self.outputs != expected_outputs:
                 self.unexpected_outputs.append((self.inputs,  expected_outputs, self.outputs))
 
-        msg = (f"Input(s):  {', '.join(str(val) for val in self.inputs)}\n"
-               f"Output(s): {', '.join(str(val) for val in self.outputs)}\n"
-               f"{expect_output_msg}"
-               f"Program executed in {self.num_cycles} cycles, cumulative {self.total_cycles}.\n")
+        msg = (f"Input(s):\t\t{', '.join(str(val) for val in self.inputs)}\n"
+               f"{expect_output_msg}\n"
+               f"Actual Output(s):\t{', '.join(str(val) for val in self.outputs)}\n"
+               f"Program executed in {self.num_cycles} cycles, cumulative {self.total_cycles}.\n\n")
         self.feedback += msg
-        if not args.quiet:
+        if not self.args.quiet:
             print(msg)
 
     def reset(self):
@@ -195,8 +200,8 @@ class LMC:
 
     def write_feedback(self):
         # write feedback to a txt file
-        if args.feedback != None:
-            with open(args.feedback or f"feedback_{self.filename}", 'w') as f:
+        if self.args.feedback is not None:
+            with open(self.args.feedback or f"feedback_{self.filename}", 'w') as f:
                 f.write(self.feedback)
 
     def hlt(self, _x):
@@ -241,18 +246,18 @@ class LMC:
             self.outputs.append(self.accumulator)
 
 
-file_path = args.file
-checker_file_path = args.checker
+filepath = args.file
+checker_filepath = args.checker
 
 # moved this out here to avoid parsing args inside the class as much as possible
 # also, as much as I like the generator syntax, I need to be able to see if there's any left
-if args.input != None:
+if args.input is not None:
     potential_values = [int(value) % 1000 for value in args.input]
 elif args.all:
     potential_values = [value for value in range(1000)]
 else:
     potential_values = []
 
-lmc = LMC(file_path, potential_values, 50000, checker_file_path)
+lmc = LMC(filepath, potential_values, 50000, checker_filepath, args)
 # lmc.print_mailboxes()
 lmc.run_batch()
