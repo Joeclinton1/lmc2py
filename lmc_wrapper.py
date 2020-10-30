@@ -2,12 +2,12 @@
 Handles the high-level running of LMC programs.
 """
 
+from lmc import LMC
 import importlib.util
 import ntpath
 import sys
 import os
 import re
-from lmc import LMC
 import plot
 
 
@@ -54,11 +54,10 @@ class LMCWrapper:
         print("Compiled program uses %d/100 mailboxes." % len(self.mailboxes))
         self.lmc = LMC(self.potential_values, self.mailboxes, self.max_cycles)
 
-    def get_checker(self, checker_filepath):
+    @staticmethod
+    def get_checker(checker_filepath):
         # gets the checker function at the given file_path.
-
         os.chdir(os.path.dirname(__file__))
-        # abs_path = os.path.abspath(checker_file_path)
         spec = importlib.util.spec_from_file_location("divisors.py", checker_filepath)
         foo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(foo)
