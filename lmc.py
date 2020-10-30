@@ -1,9 +1,6 @@
-import importlib.util
-import ntpath
-import sys
-import os
-import re
-
+"""
+Handles the low-level running of LMC programs.
+"""
 
 class LMC:
     def __init__(self, _potential_values, mailboxes, max_cycles=50000):

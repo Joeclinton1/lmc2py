@@ -1,3 +1,7 @@
+"""
+Main controller of lmc2py. From here lmc_wrapper and parsing is called.
+"""
+
 from parsing import args
 from lmc_wrapper import LMCWrapper
 

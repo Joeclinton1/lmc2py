@@ -1,5 +1,8 @@
-import argparse
+"""
+Parses the command line arguments.
+"""
 
+import argparse
 
 # streamlining the CLI
 parser = argparse.ArgumentParser(

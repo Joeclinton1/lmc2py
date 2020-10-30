@@ -1,3 +1,7 @@
+"""
+Handles the high-level running of LMC programs.
+"""
+
 import importlib.util
 import ntpath
 import sys

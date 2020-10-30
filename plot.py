@@ -1,3 +1,7 @@
+"""
+Creates a scatter graph relating input values to number of cycles taken.
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 
