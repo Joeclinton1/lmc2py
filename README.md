@@ -26,6 +26,7 @@ This behaviour can be changed by the use of optional flags, which are put in pla
 - `-q`, `--quiet`: executes the program without any terminal output, except errors. If you use this flag without any output flags, the program may not return anything.
 - `-f [FILE]`, `--feedback [FILE]`: save the results of the program to a text file. If no FILE is specified, this will be a file in the source file's directory called feedback_\<filename\>.
 - `-ch CHECKER`, `--checker CHECKER`: run a checker function from a python file with the same inputs as the LMC code, to show the expected output and see if your program's output matches. Some example checker functions are included in `checks/`.
+-`-g`, `--graph`: show a scatter graph relating input to the number of cycles. Helps with visualizing program efficiency.
 
 ### Something to consider
 
