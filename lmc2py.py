@@ -16,6 +16,6 @@ elif args.all:
 else:
     potential_values = []
 
-lmc_wrapper = LMCWrapper(filepath, potential_values, 50000, checker_filepath, args)
+lmc_wrapper = LMCWrapper(filepath, potential_values, 50000, args)
 # lmc.print_mailboxes()
 lmc_wrapper.run_batch()

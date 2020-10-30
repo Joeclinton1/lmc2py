@@ -2,15 +2,14 @@ def checker(inputs):
     n = inputs[0]
     f = 1
     factors = []
-    if n in [0,1]:
+    if n in [0, 1]:
         return [n]
-    while 1:
+    while f * f <= n:
         if n % f == 0:
             factors.append(f)
-            ndivf = n // f
-            if ndivf != f:
-                factors.append(ndivf)
+            n_div_f = n // f
+            if n_div_f != f:
+                factors.append(n_div_f)
         f += 1
-        if f * f > n:
-            break
+
     return sorted(factors)

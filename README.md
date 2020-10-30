@@ -6,6 +6,7 @@ This is a single file python script which runs the "Little Minion Computer" .lmc
 - Interprets LMC assembly and .LMC files to python
 - Test program against multiple inputs at once.
 - Test program against all inputs.
+- Test program using original LMC test files.
 - Check program outputs expected output.
 - Output graph of inputs vs F/E cycles for an easy visualisation of your programs efficiency.
 
@@ -23,6 +24,7 @@ This behaviour can be changed by the use of optional flags, which are put in pla
 - `-h`, `--help`: displays this list of options, instead of doing anything else. A source file is not needed in this case.
 - `-a`, `--all`: executes the program once for each value between 0 and 999.
 - `-i [VAL]`, `--input [VAL]`: executes the program once for each VAL given. Multiple inputs can be given as a list, like `-i 840 961 997`.
+- `-b [FILE]`, `--batch [FILE]`: Runs from any test file that is compatible with the original LMC and gives expected outputs based on those specified in this file.
 - `-q`, `--quiet`: executes the program without any terminal output, except errors. If you use this flag without any output flags, the program may not return anything.
 - `-f [FILE]`, `--feedback [FILE]`: save the results of the program to a text file. If no FILE is specified, this will be a file in the source file's directory called feedback_\<filename\>.
 - `-ch CHECKER`, `--checker CHECKER`: run a checker function from a python file with the same inputs as the LMC code, to show the expected output and see if your program's output matches. Some example checker functions are included in `checks/`.
@@ -31,3 +33,5 @@ This behaviour can be changed by the use of optional flags, which are put in pla
 ### Something to consider
 
 If your program requires multiple inputs, and it is passed a series of inputs using either `--all` or `--input`, it will use the next value from that series each time. If it runs out of inputs and then hits another IN statement, it will prompt you for another in the terminal.
+
+Furthermore, if you attempt to use both the `--batch` and `--checker` arguments at the same time, the expected outputs in the batch file will be used and the checker function will be ignored.
