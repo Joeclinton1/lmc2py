@@ -8,7 +8,11 @@ import ntpath
 import sys
 import os
 import re
-import plot
+
+try:
+    import plot
+except ImportError:
+    plot = None
 
 
 class LMCWrapper:
@@ -147,7 +151,8 @@ class LMCWrapper:
                     print("inputs: %s, expected_output: %s, output: %s" % (inputs, expected_outputs, outputs))
         self.write_feedback()
 
-        if self.args.graph:
+        # checking if the plot module was imported
+        if plot and self.args.graph:
             plot.plot_graph(self.inputs_and_cycles)
 
     def run_once(self):
