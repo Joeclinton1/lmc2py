@@ -2,6 +2,11 @@
 Handles the low-level running of LMC programs.
 """
 
+
+def get_input(text):
+    return input(text)
+
+
 class LMC:
     def __init__(self, _potential_values, mailboxes, max_cycles=50000):
         self.inputs = []
@@ -85,7 +90,7 @@ class LMC:
             self.neg_flag = 0
             self.accumulator = (self.potential_values or [None]).pop(0)
             if self.accumulator is None:
-                self.accumulator = int(input("Enter value: ")) % 1000
+                self.accumulator = int(get_input("Enter value: ")) % 1000
             self.inputs.append(self.accumulator)
         elif x == 2:
             self.outputs.append(self.accumulator)
