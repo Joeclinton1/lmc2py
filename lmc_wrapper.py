@@ -136,7 +136,7 @@ class LMCWrapper:
     def run_program(self):
         inputs, outputs, num_cycles = self.lmc.run_cycles()
         self.lmc.reset()
-        self.total_cycles += self.num_cycles
+        self.total_cycles += num_cycles
         self.store_feedback_msg(inputs, outputs, num_cycles)
 
     def store_feedback_msg(self, inputs, outputs, num_cycles):
