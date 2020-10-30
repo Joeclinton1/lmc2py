@@ -17,20 +17,12 @@ class LMCWrapper:
         self.lmc = None
         self.checker = None
         self.filename = ntpath.basename(_filepath)
-        self.inputs = []
-        self.outputs = []
         self.inputs_and_cycles = {}
         self.feedback = ""
         self.mailboxes = []
-        self.accumulator = 0
-        self.neg_flag = 0
-        self.counter = 0
         self.potential_values = _potential_values
         self.max_cycles = max_cycles
-        self.num_cycles = 0
         self.total_cycles = 0
-        self.address_reg = 0
-        self.halted = 0
         self.unexpected_outputs = []
 
         self.assembly_codes = {
@@ -63,6 +55,8 @@ class LMCWrapper:
         self.lmc = LMC(self.potential_values, self.mailboxes, self.max_cycles)
 
     def get_checker(self, checker_filepath):
+        # gets the checker function at the given file_path.
+
         os.chdir(os.path.dirname(__file__))
         # abs_path = os.path.abspath(checker_file_path)
         spec = importlib.util.spec_from_file_location("divisors.py", checker_filepath)
