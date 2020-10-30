@@ -73,6 +73,10 @@ class LMCWrapper:
             assembly = [[s.strip() for s in re.split('\\s+', re.sub('#.*', '', line))][:3]
                         for line in file if line.strip() != '' and line.strip()[0] != '#']
 
+            # ensure that there are no more than 100 registers
+            if len(assembly) > 100:
+                raise IndexError("More than 100 registers used")
+
             # get pointers
             pointers = {'': ''}
             for box_num, cmd in enumerate(assembly):
@@ -88,7 +92,10 @@ class LMCWrapper:
                 elif opcode in ["IN", "OUT", "HLT"]:
                     machine_code = self.assembly_codes[opcode]
                 else:
-                    machine_code = self.assembly_codes[opcode] + pointers[val].zfill(2)
+                    if val in pointers:
+                        machine_code = self.assembly_codes[opcode] + pointers[val].zfill(2)
+                    else:
+                        raise NameError(f"No variable of name '{val}' initiated with DAT")
                 mailboxes.append(machine_code)
         else:
             sys.exit('LMC2PY requires a .lmc or assembly .txt or .asm file.')
