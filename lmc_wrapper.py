@@ -55,6 +55,7 @@ class LMCWrapper:
         os.chdir(ntpath.dirname(filepath) or '.')
         ext = filepath[-3:]
         self.mailboxes = self.get_mailboxes_from_file(f, ext)
+        print("Compiled program uses %d/100 mailboxes." % len(self.mailboxes))
         self.lmc = LMC(self.potential_values, self.mailboxes, self.max_cycles)
 
     def get_checker(self, checker_filepath):
