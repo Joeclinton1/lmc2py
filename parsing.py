@@ -14,12 +14,12 @@ parser.add_argument("file",
                     help="the file to execute; can be either LMC assembly (.txt or .asm) "
                          "or compiled LMC machine code (.lmc)")
 
-# input arguments; commented code is not yet implemented
+# input arguments
 i_group = parser.add_mutually_exclusive_group()
 i_group.add_argument("-a", "--all", action="store_true",
                      help="run the program for all inputs between 0 and 999 (recommend also using -q)")
-# i_group.add_argument("-b", "--batch",
-#                      help="a batch process file to test the program against")
+i_group.add_argument("-b", "--batch",
+                     help="a batch process file to test the program against")
 i_group.add_argument("-i", "--input", nargs="*", metavar="VAL",
                      help="one or more inputs to supply to the program, in order")
 
@@ -43,4 +43,5 @@ parser.add_argument("-ch", "--checker", help="filepath to file containing checke
 
 parser.add_argument("-g", "--graph", action="store_true",
                     help="show a scatter graph relating input to number of cycles")
+
 args = parser.parse_args()

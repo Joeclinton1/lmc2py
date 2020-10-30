@@ -12,10 +12,11 @@ import plot
 
 
 class LMCWrapper:
-    def __init__(self, _filepath, _potential_values, max_cycles=50000, _checker_filepath=None, args=None):
+    def __init__(self, _filepath, _potential_values, max_cycles=50000, args=None):
         self.args = args
         self.lmc = None
         self.checker = None
+        self.batch_tests = None
         self.filename = ntpath.basename(_filepath)
         self.inputs_and_cycles = {}
         self.feedback = ""
@@ -38,14 +39,18 @@ class LMCWrapper:
             'OUT': '902'
         }
 
-        self.setup(_filepath, _checker_filepath)
+        self.setup(_filepath, args.checker, args.batch)
 
-    def setup(self, filepath, _checker_filepath):
+    def setup(self, filepath, _checker_filepath, _batch_filepath):
         # checks the extension and converts the file to mailbox machine code
 
         # read checker file
-        if _checker_filepath:
+        if _batch_filepath:
+            self.setup_batch(_batch_filepath)
+            self.checker = self.get_batch_outputs
+        elif _checker_filepath:
             self.checker = self.get_checker(_checker_filepath)
+
         # read lmc file
         f = open(filepath).readlines()
         os.chdir(ntpath.dirname(filepath) or '.')
@@ -62,6 +67,26 @@ class LMCWrapper:
         foo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(foo)
         return foo.checker
+
+    def setup_batch(self, batch_filepath):
+        with open(batch_filepath) as f:
+            lines = (line for line in f.readlines() if len(line.strip()) != 0)
+
+        self.batch_tests = []
+        for line in lines:
+            try:
+                label, inputs, outputs, cycles = line.strip().split(';')
+                inputs = [int(val) for val in inputs.split(',')]
+                outputs = [int(val) for val in outputs.split(',')]
+                cycles = int(cycles)
+
+                self.potential_values += inputs
+            except ValueError:
+                raise SyntaxError("Test file is not formatted correctly, please check it and try again.")
+            self.batch_tests.append((label, inputs, outputs, cycles))
+
+    def get_batch_outputs(self, _inputs):
+        return self.batch_tests.pop(0)[2]
 
     def get_mailboxes_from_file(self, file, ext):
         mailboxes = []
@@ -131,6 +156,10 @@ class LMCWrapper:
         self.write_feedback()
 
     def run_program(self):
+        if self.batch_tests:
+            self.feedback += f"Attempting to run test {self.batch_tests[0][0]}:\n"
+            self.lmc.max_cycles = self.batch_tests[0][3]
+
         inputs, outputs, num_cycles = self.lmc.run_cycles()
         self.lmc.reset()
         self.total_cycles += num_cycles
