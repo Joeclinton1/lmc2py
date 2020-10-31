@@ -8,7 +8,7 @@ This is a python module which runs the "Little Minion Computer" .lmc and .txt fi
 - Test program against all inputs.
 - Test program using original LMC test files.
 - Check program outputs expected output.
-- Output graph of inputs vs F/E cycles for an easy visualisation of your programs efficiency.
+- Output graph of inputs vs F/E cycles.
 
 ## Usage
 
