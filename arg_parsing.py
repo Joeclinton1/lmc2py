@@ -21,7 +21,7 @@ def parse_args(args):
                          help="run the program for all inputs between 0 and 999 (recommend also using -q)")
      i_group.add_argument("-b", "--batch",
                          help="a batch process file to test the program against")
-     i_group.add_argument("-i", "--input", nargs="*", metavar="VAL",
+     i_group.add_argument("-i", "--input", nargs="+", metavar="VAL", type=int,
                          help="one or more inputs to supply to the program, in order")
 
      # verbosity arguments
@@ -46,5 +46,3 @@ def parse_args(args):
                          help="show a scatter graph relating input to number of cycles")
 
      return parser.parse_args(args)
-
-args = parse_args(sys.argv[1:])

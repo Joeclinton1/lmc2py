@@ -122,7 +122,7 @@ class TestRunCycles(unittest.TestCase):
         self.assertEqual(num_cycles, 5)
         self.assertEqual(self.lmc.address_reg, 5)
         self.assertEqual(self.lmc.counter, 6)
-        self.assertEqual(self.lm.accumulator, 5)
+        self.assertEqual(self.lmc.accumulator, 5)
         self.assertTrue(self.lmc.halted)
 
 if __name__ == '__main__':

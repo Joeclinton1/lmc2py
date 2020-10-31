@@ -1,10 +1,11 @@
 """
 Main controller of lmc2py. From here lmc_wrapper and parsing is called.
 """
-
-from arg_parsing import args
+import sys
+from arg_parsing import parse_args
 from lmc_wrapper import LMCWrapper
 
+args = parse_args(sys.argv[1:])
 
 filepath = args.file
 
