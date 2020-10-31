@@ -17,6 +17,19 @@ class TestHelp(unittest.TestCase):
             args = parse_args(inp)
         self.assertEqual(cm.exception.code,0)
 
+class TestFile(unittest.TestCase):
+    def test_nothing(self):
+        inp = []
+        with self.assertRaises(SystemExit) as cm:
+            args = parse_args(inp)
+        self.assertEqual(cm.exception.code,2)
+    
+    def test_missing(self):
+        inp = ["-a"]
+        with self.assertRaises(SystemExit) as cm:
+            args = parse_args(inp)
+        self.assertEqual(cm.exception.code,2)
+
 class TestAll(unittest.TestCase):
     def test_short_form(self):
         inp = ["FILE","-a"]
@@ -102,6 +115,28 @@ class TestInput(unittest.TestCase):
     
     def test_wrong_type_float(self):
         inp = ["FILE","-i","10.1"]
+        with self.assertRaises(SystemExit) as cm:
+            args = parse_args(inp)
+        self.assertEqual(cm.exception.code,2)
+
+class TestVerbose(unittest.TestCase):
+    def test_short_form(self):
+        inp = ["FILE","-v"]
+        args = parse_args(inp)
+        self.assertTrue(args.verbose)
+    
+    def test_long_form(self):
+        inp = ["FILE","--verbose"]
+        args = parse_args(inp)
+        self.assertTrue(args.verbose)
+    
+    def test_missing(self):
+        inp = ["FILE"]
+        args = parse_args(inp)
+        self.assertFalse(args.verbose)
+    
+    def test_too_many_vals(self):
+        inp = ["FILE","-v","TEXT"]
         with self.assertRaises(SystemExit) as cm:
             args = parse_args(inp)
         self.assertEqual(cm.exception.code,2)
@@ -201,6 +236,45 @@ class TestGraph(unittest.TestCase):
     
     def test_too_many_vals(self):
         inp = ["FILE","-g","TEXT"]
+        with self.assertRaises(SystemExit) as cm:
+            args = parse_args(inp)
+        self.assertEqual(cm.exception.code,2)
+
+class TestCombined(unittest.TestCase):
+    def test_many(self):
+        inp = ["FILE","-aqf"]
+        args = parse_args(inp)
+        self.assertTrue(args.all)
+        self.assertTrue(args.quiet)
+        self.assertEqual(args.feedback,"")
+    
+    def test_many_with_val(self):
+        inp = ["FILE","-aqf","PATH"]
+        args = parse_args(inp)
+        self.assertTrue(args.all)
+        self.assertTrue(args.quiet)
+        self.assertEqual(args.feedback,"PATH")
+    
+    def test_exclusive_ai(self):
+        inp = ["FILE","-a","-i","100"]
+        with self.assertRaises(SystemExit) as cm:
+            args = parse_args(inp)
+        self.assertEqual(cm.exception.code,2)
+    
+    def test_exclusive_ab(self):
+        inp = ["FILE","-a","-b","PATH"]
+        with self.assertRaises(SystemExit) as cm:
+            args = parse_args(inp)
+        self.assertEqual(cm.exception.code,2)
+    
+    def test_exclusive_bi(self):
+        inp = ["FILE","-b","PATH","-i","100"]
+        with self.assertRaises(SystemExit) as cm:
+            args = parse_args(inp)
+        self.assertEqual(cm.exception.code,2)
+
+    def test_exclusive_vq(self):
+        inp = ["FILE","-v","-q"]
         with self.assertRaises(SystemExit) as cm:
             args = parse_args(inp)
         self.assertEqual(cm.exception.code,2)
