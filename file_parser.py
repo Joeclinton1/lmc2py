@@ -1,9 +1,10 @@
+import os
 import re
 import sys
-import os
+
 
 def get_mailboxes_from_file(filepath):
-    # change working directory to lmc2py.py directory.
+    """Change working directory to lmc2py.py directory."""
     os.chdir(os.path.dirname(__file__))
 
     # read lmc file
@@ -22,6 +23,7 @@ def get_mailboxes_from_file(filepath):
 
 
 def mailboxes_from_assembly_file(file):
+    """Generates mailboxes from lmc assembly and returns them."""
     assembly = [[s.strip() for s in re.split('\\s+', re.sub('#.*', '', line))][:3]
                 for line in file if line.strip() != '' and line.strip()[0] != '#']
 
@@ -42,6 +44,7 @@ def mailboxes_from_assembly_file(file):
 
 
 def assembly_to_machine_code(assembly, pointers):
+    """Converts lmc assembly into lmc machine code."""
     assembly_codes = {
         'HLT': '000',
         'ADD': '1',
