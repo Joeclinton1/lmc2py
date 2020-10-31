@@ -8,16 +8,19 @@ import ntpath
 import sys
 import os
 import re
-
-try:
-    import plot
-except ImportError:
-    plot = None
-
+import plot
+import file_parser
 
 class LMCWrapper:
-    def __init__(self, _filepath, _potential_values, max_cycles=50000, args=None):
-        self.args = args
+    def __init__(self, _filepath, _potential_values, max_cycles=50000, **kwargs):
+
+        self.is_quiet = kwargs['quiet'] if 'quiet' in kwargs else None
+        self.is_verbose = kwargs['verbose'] if 'verbose' in kwargs else None
+        self.batch_fp= kwargs['batch_fp'] if 'batch_fp' in kwargs else None
+        self.checker_fp = kwargs['checker_fp'] if 'checker_fp' in kwargs else None
+        self.has_graph = kwargs['graph'] if 'graph' in kwargs else None
+        self.has_feedback = kwargs['feedback'] if 'feedback' in kwargs else None
+
         self.lmc = None
         self.checker = None
         self.batch_tests = None
@@ -30,38 +33,25 @@ class LMCWrapper:
         self.total_cycles = 0
         self.unexpected_outputs = []
 
-        self.assembly_codes = {
-            'HLT': '000',
-            'ADD': '1',
-            'SUB': '2',
-            'STO': '3',
-            'LDA': '5',
-            'BR': '6',
-            'BRZ': '7',
-            'BRP': '8',
-            'IN': '901',
-            'OUT': '902'
-        }
+        self.setup(_filepath)
 
-        self.setup(_filepath, args.checker, args.batch)
-
-    def setup(self, filepath, _checker_filepath, _batch_filepath):
+    def setup(self, filepath):
         # checks the extension and converts the file to mailbox machine code
 
-        # read checker file
-        if _batch_filepath:
-            self.setup_batch(_batch_filepath)
+        # Adds checker function from file or from batch
+        if self.batch_fp:
+            self.batch_tests, self.potential_values = file_parser.parse_batch_test_file(self.batch_fp)
             self.checker = self.get_batch_outputs
-        elif _checker_filepath:
-            self.checker = self.get_checker(_checker_filepath)
+        elif self.checker_fp:
+            self.checker = self.get_checker(self.checker_fp)
 
-        # read lmc file
-        f = open(filepath).readlines()
-        os.chdir(ntpath.dirname(filepath) or '.')
-        ext = filepath[-3:]
-        self.mailboxes = self.get_mailboxes_from_file(f, ext)
-        print("Compiled program uses %d/100 mailboxes." % len(self.mailboxes))
+        # compiles mailboxes from file
+        self.mailboxes, num_mailboxes = file_parser.get_mailboxes_from_file(filepath)
+        print("Compiled program uses %d/100 mailboxes." % num_mailboxes)
         self.lmc = LMC(self.potential_values, self.mailboxes, self.max_cycles)
+
+        # change working directory to filepath so that feedback outputs in right location.
+        os.chdir(ntpath.dirname(filepath) or '.')
 
     @staticmethod
     def get_checker(checker_filepath):
@@ -72,61 +62,8 @@ class LMCWrapper:
         spec.loader.exec_module(foo)
         return foo.checker
 
-    def setup_batch(self, batch_filepath):
-        with open(batch_filepath) as f:
-            lines = (line for line in f.readlines() if len(line.strip()) != 0)
-
-        self.batch_tests = []
-        for line in lines:
-            try:
-                label, inputs, outputs, cycles = line.strip().split(';')
-                inputs = [int(val) for val in inputs.split(',')]
-                outputs = [int(val) for val in outputs.split(',')]
-                cycles = int(cycles)
-
-                self.potential_values += inputs
-            except ValueError:
-                raise SyntaxError("Test file is not formatted correctly, please check it and try again.")
-            self.batch_tests.append((label, inputs, outputs, cycles))
-
     def get_batch_outputs(self, _inputs):
         return self.batch_tests.pop(0)[2]
-
-    def get_mailboxes_from_file(self, file, ext):
-        mailboxes = []
-        if ext.lower() == 'lmc':
-            mailboxes = file[1].split('%')[2].split(',')[:-1]
-        elif ext.lower() in ['txt', 'asm']:
-            assembly = [[s.strip() for s in re.split('\\s+', re.sub('#.*', '', line))][:3]
-                        for line in file if line.strip() != '' and line.strip()[0] != '#']
-
-            # ensure that there are no more than 100 registers
-            if len(assembly) > 100:
-                raise IndexError("More than 100 registers used")
-
-            # get pointers
-            pointers = {'': ''}
-            for box_num, cmd in enumerate(assembly):
-                if cmd[0] != '':
-                    pointers[cmd[0]] = str(box_num)
-
-            # convert assembly to machine code
-            for cmd in assembly:
-                opcode = cmd[1]
-                val = cmd[2] if len(cmd) == 3 else ''
-                if opcode == 'DAT':
-                    machine_code = '000' if val == '' else val.zfill(3)
-                elif opcode in ["IN", "OUT", "HLT"]:
-                    machine_code = self.assembly_codes[opcode]
-                else:
-                    if val in pointers:
-                        machine_code = self.assembly_codes[opcode] + pointers[val].zfill(2)
-                    else:
-                        raise NameError(f"No variable of name '{val}' initiated with DAT")
-                mailboxes.append(machine_code)
-        else:
-            sys.exit('LMC2PY requires a .lmc or assembly .txt or .asm file.')
-        return mailboxes
 
     def print_mailboxes(self):
         print(self.mailboxes)
@@ -151,8 +88,7 @@ class LMCWrapper:
                     print("inputs: %s, expected_output: %s, output: %s" % (inputs, expected_outputs, outputs))
         self.write_feedback()
 
-        # checking if the plot module was imported
-        if plot and self.args.graph:
+        if self.has_graph:
             plot.plot_graph(self.inputs_and_cycles)
 
     def run_once(self):
@@ -190,11 +126,11 @@ class LMCWrapper:
         elif len(inputs) > 1:
             self.inputs_and_cycles[tuple(inputs)] = num_cycles
 
-        if not self.args.quiet:
+        if not self.is_quiet:
             print(msg)
 
     def write_feedback(self):
         # write feedback to a txt file
-        if self.args.feedback is not None:
-            with open(self.args.feedback or f"feedback_{self.filename}", 'w') as f:
+        if self.has_feedback is not None:
+            with open(self.feedback or f"feedback_{self.filename}", 'w') as f:
                 f.write(self.feedback)

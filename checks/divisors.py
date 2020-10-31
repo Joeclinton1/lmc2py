@@ -1,3 +1,8 @@
+"""
+Checker function takes a list of integers as input and outputs a list of integers
+"""
+
+
 def checker(inputs):
     n = inputs[0]
     f = 1
