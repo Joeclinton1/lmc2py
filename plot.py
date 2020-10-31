@@ -7,8 +7,8 @@ import numpy as np
 
 
 def plot_graph(inputs_and_cycles):
-    x_coors, y_coors = get_coors(inputs_and_cycles)
-    x_np, y_np = convert_to_np(x_coors, y_coors)
+    """Plots the graph and shows it to the user."""
+    x_np, y_np = get_np_coors(inputs_and_cycles)
 
     plt.plot(x_np, y_np, "o", ms=1)
     plt.xlabel("Input value")
@@ -16,13 +16,18 @@ def plot_graph(inputs_and_cycles):
     plt.show()
 
 
-def get_coors(inputs_and_cycles):
+def get_np_coors(inputs_and_cycles):
+    """Converts dictionary into arrays of coordinates"""
+    # convert dict keys and values into tuples
     x_coors = tuple(inputs_and_cycles.keys())
     y_coors = tuple(inputs_and_cycles.values())
-    return x_coors, y_coors
 
+    for item in x_coors:
+        if isinstance(item, tuple):
+            raise TypeError("More than one input given for a single run of the program. Cannot be graphed.")
 
-def convert_to_np(x_coors, y_coors):
+    # convert resulting tuples into numpy arrays
     x_np = np.array(x_coors)
     y_np = np.array(y_coors)
+
     return x_np, y_np

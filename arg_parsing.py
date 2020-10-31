@@ -38,10 +38,10 @@ v_group.add_argument("-q", "--quiet", action="store_true",
 #                     help="save the process results to a .csv file")
 parser.add_argument("-f", "--feedback", nargs="?", default=None, const="", metavar="FILE",
                     help="save the process results to a .txt file")
-
-parser.add_argument("-ch", "--checker", help="filepath to file containing checker function")
-
+parser.add_argument("-ch", "--checker",
+                    help="filepath to file containing checker function")
 parser.add_argument("-g", "--graph", action="store_true",
-                    help="show a scatter graph relating input to number of cycles")
+                    help="show a scatter graph relating input to number of cycles; "
+                         "requires matplotlib to be installed prior to using")
 
 args = parser.parse_args()
