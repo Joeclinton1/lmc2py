@@ -5,8 +5,8 @@ import sys
 from arg_parsing import parse_args
 from lmc_wrapper import LMCWrapper
 
-args = parse_args(sys.argv[1:])
 
+args = parse_args(sys.argv[1:])
 filepath = args.file
 
 if args.input is not None:
@@ -24,5 +24,5 @@ lmc_wrapper = LMCWrapper(filepath, potential_values, 50000,
                          graph=args.graph,
                          feedback=args.feedback
                          )
-# lmc.print_mailboxes()
+
 lmc_wrapper.run_batch()

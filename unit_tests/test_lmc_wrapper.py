@@ -5,7 +5,6 @@ import textwrap
 
 
 class TestChecker(unittest.TestCase):
-
     def setUp(self):
         self.checker_files = [
             "divisors"
@@ -27,7 +26,6 @@ class TestChecker(unittest.TestCase):
 
 
 class TestRunProgram(unittest.TestCase):
-
     def setUp(self):
         self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/test_all_functions.lmc", [55],
                                       quiet=True)
@@ -39,7 +37,6 @@ class TestRunProgram(unittest.TestCase):
 
 
 class TestRunBatch(unittest.TestCase):
-
     def setUp(self):
         self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/test_all_functions.lmc", [1, 5, 19, 25, 999],
                                       quiet=True)
@@ -51,7 +48,6 @@ class TestRunBatch(unittest.TestCase):
 
 
 class TestStoreFeedbackMessage(unittest.TestCase):
-
     def setUp(self):
         self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/test_all_functions.lmc", [], quiet=True)
         self.correct_feedback = """\

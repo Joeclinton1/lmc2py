@@ -5,7 +5,6 @@ import json
 
 
 # TODO: Test that the correct errors are raised when files are improperly formatted
-
 class TestMailboxesFromFile(unittest.TestCase):
     def setUp(self):
         self.correct_mailboxes = ['901', '902', '110', '511', '210', '311', '703', '803', '609', '000', '005']

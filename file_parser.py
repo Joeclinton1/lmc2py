@@ -8,7 +8,8 @@ def get_mailboxes_from_file(filepath):
     os.chdir(os.path.dirname(__file__))
 
     # read lmc file
-    file = open(filepath).readlines()
+    with open(filepath) as f:
+        file = f.readlines()
 
     ext = filepath[-3:]
 

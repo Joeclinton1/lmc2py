@@ -2,20 +2,17 @@
 Handles the high-level running of LMC programs.
 """
 
-import file_parser
 from lmc import LMC
+import file_parser
 import plot
 
 import importlib.util
 import ntpath
 import os
-import re
-import sys
 
 
 class LMCWrapper:
     def __init__(self, _filepath, _potential_values, max_cycles=50000, **kwargs):
-
         self.is_quiet = kwargs.get('quiet', None)
         self.is_verbose = kwargs.get('verbose', None)
         self.batch_fp = kwargs.get('batch_fp', None)
