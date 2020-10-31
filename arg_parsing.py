@@ -3,7 +3,6 @@ Parses the command line arguments.
 """
 
 import argparse
-import sys
 
 def parse_args(args):
      parser = argparse.ArgumentParser(
