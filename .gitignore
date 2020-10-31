@@ -2,3 +2,4 @@ __pycache__/
 checks/__pycache__/
 
 /unit_tests/_trial_temp/
+/unit_tests/file_parsing_tests/_trial_temp/
