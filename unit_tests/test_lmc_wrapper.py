@@ -27,7 +27,7 @@ class TestChecker(unittest.TestCase):
 
 class TestRunProgram(unittest.TestCase):
     def setUp(self):
-        self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/test_all_functions.lmc", [55],
+        self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/all_functions.lmc", [55],
                                       quiet=True)
 
     def test_run_program(self):
@@ -38,7 +38,7 @@ class TestRunProgram(unittest.TestCase):
 
 class TestRunBatch(unittest.TestCase):
     def setUp(self):
-        self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/test_all_functions.lmc", [1, 5, 19, 25, 999],
+        self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/all_functions.lmc", [1, 5, 19, 25, 999],
                                       quiet=True)
 
     def test_run_batch(self):
@@ -49,7 +49,7 @@ class TestRunBatch(unittest.TestCase):
 
 class TestStoreFeedbackMessage(unittest.TestCase):
     def setUp(self):
-        self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/test_all_functions.lmc", [], quiet=True)
+        self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/all_functions.lmc", [], quiet=True)
         self.correct_feedback = """\
         Input(s):		1, 2, 3, 4\n
         Actual Output(s):	1, 2, 3, 4

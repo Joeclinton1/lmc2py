@@ -1,0 +1,6 @@
+	IN
+	OUT
+	MULT #this command does not exist in LMC
+
+
+
