@@ -1,8 +1,9 @@
-from arg_parsing import parse_args
-
 import unittest
 import sys
 import os
+
+sys.path.append(os.path.abspath(""))
+from arg_parsing import parse_args
 
 
 class TestHelp(unittest.TestCase):

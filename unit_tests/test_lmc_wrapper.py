@@ -1,8 +1,10 @@
 import unittest
-from lmc_wrapper import LMCWrapper
-import os
 import textwrap
+import sys
+import os
 
+sys.path.append(os.path.abspath(""))
+from lmc_wrapper import LMCWrapper
 
 class TestChecker(unittest.TestCase):
     def setUp(self):

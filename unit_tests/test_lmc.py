@@ -1,6 +1,12 @@
 import unittest
 from unittest.mock import patch
+import sys
+import os
+
+sys.path.append(os.path.abspath(""))
 from lmc import LMC
+
+
 
 
 class TestInput(unittest.TestCase):

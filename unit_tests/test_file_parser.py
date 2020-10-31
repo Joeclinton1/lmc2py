@@ -1,17 +1,22 @@
 import unittest
-import file_parser
-import os
 import json
+import sys
+import os
+
+sys.path.append(os.path.abspath(""))
+import file_parser
 
 
 def reset_directory():
     os.chdir(os.path.dirname(__file__))
+
 
 class TestMailboxesFromFile(unittest.TestCase):
     def test_unsupported_extension(self):
         lmc_filepath = "unit_tests/file_parsing_tests/unsupported_ext.py"
         with self.assertRaises(file_parser.UnsupportedExtensionError):
             file_parser.get_mailboxes_from_file(lmc_filepath)
+
 
 class TestParseLMC(unittest.TestCase):
     def setUp(self):
@@ -21,7 +26,7 @@ class TestParseLMC(unittest.TestCase):
 
     def test_lmc(self):
         lmc_file_path = "unit_tests/file_parsing_tests/all_functions.lmc"
-        mailboxes= file_parser.parse_lmc_file(lmc_file_path)
+        mailboxes = file_parser.parse_lmc_file(lmc_file_path)
 
         self.assertEqual(mailboxes, self.correct_mailboxes)
         os.chdir(os.path.dirname(__file__))
@@ -66,7 +71,8 @@ class TestParseBatch(unittest.TestCase):
         self.correct_potential_values = [0, 1, 60, 512, 360, 720, 840, 837, 899, 979, 997]
 
     def test_parse_batch_file(self):
-        batch_tests, potential_values = file_parser.parse_batch_test_file("unit_tests/file_parsing_tests/batch_test.txt")
+        batch_tests, potential_values = file_parser.parse_batch_test_file(
+            "unit_tests/file_parsing_tests/batch_test.txt")
         self.assertEqual(self.correct_batch_test, batch_tests)
         self.assertEqual(self.correct_potential_values, potential_values)
 
