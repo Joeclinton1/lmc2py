@@ -26,6 +26,18 @@ class TestChecker(unittest.TestCase):
                 self.assertTrue(valid_output)
 
 
+class TestRunProgram(unittest.TestCase):
+
+    def setUp(self):
+        self.lmc_wrapper = LMCWrapper("unit_tests/file_parsing_tests/test_all_functions.lmc", [55],
+                                      quiet=True)
+
+    def test_run_program(self):
+        self.lmc_wrapper.run_program()
+        self.assertEqual(self.lmc_wrapper.total_cycles, 10)
+        self.assertEqual(self.lmc_wrapper.inputs_and_cycles, {55: 10})
+
+
 class TestRunBatch(unittest.TestCase):
 
     def setUp(self):
@@ -52,4 +64,3 @@ class TestStoreFeedbackMessage(unittest.TestCase):
     def test_store_feedback_message(self):
         self.lmc_wrapper.store_feedback_msg([1, 2, 3, 4], [1, 2, 3, 4], 123)
         self.assertEqual(self.lmc_wrapper.feedback, self.correct_feedback)
-        self.assertEqual(self.lmc_wrapper.inputs_and_cycles, {(1,2,3,4): 123})
