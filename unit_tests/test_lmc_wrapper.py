@@ -1,10 +1,10 @@
+from lmc_wrapper import LMCWrapper
+
 import unittest
 import textwrap
 import sys
 import os
 
-sys.path.append(os.path.abspath(""))
-from lmc_wrapper import LMCWrapper
 
 class TestChecker(unittest.TestCase):
     def setUp(self):
@@ -62,3 +62,8 @@ class TestStoreFeedbackMessage(unittest.TestCase):
     def test_store_feedback_message(self):
         self.lmc_wrapper.store_feedback_msg([1, 2, 3, 4], [1, 2, 3, 4], 123)
         self.assertEqual(self.lmc_wrapper.feedback, self.correct_feedback)
+
+
+sys.path.append(os.path.abspath(""))
+if __name__ == '__main__':
+    unittest.main()

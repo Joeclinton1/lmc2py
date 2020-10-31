@@ -1,9 +1,8 @@
+from arg_parsing import parse_args
+
 import unittest
 import sys
 import os
-
-sys.path.append(os.path.abspath(""))
-from arg_parsing import parse_args
 
 
 class TestHelp(unittest.TestCase):
@@ -292,6 +291,6 @@ class TestCombined(unittest.TestCase):
         self.assertEqual(cm.exception.code, 2)
 
 
+sys.path.append(os.path.abspath(""))
 if __name__ == '__main__':
-    sys.path.append(os.path.abspath(""))
     unittest.main()

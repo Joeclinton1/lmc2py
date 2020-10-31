@@ -1,12 +1,9 @@
-import unittest
-from unittest.mock import patch
-import sys
-import os
-
-sys.path.append(os.path.abspath(""))
 from lmc import LMC
 
-
+from unittest.mock import patch
+import unittest
+import sys
+import os
 
 
 class TestInput(unittest.TestCase):
@@ -132,5 +129,6 @@ class TestRunCycles(unittest.TestCase):
         self.assertTrue(self.lmc.halted)
 
 
+sys.path.append(os.path.abspath(""))
 if __name__ == '__main__':
     unittest.main()

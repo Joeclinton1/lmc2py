@@ -1,10 +1,9 @@
+import file_parser
+
 import unittest
 import json
 import sys
 import os
-
-sys.path.append(os.path.abspath(""))
-import file_parser
 
 
 def reset_directory():
@@ -80,3 +79,8 @@ class TestParseBatch(unittest.TestCase):
         batch_file_path = "unit_tests/file_parsing_tests/broken_batch_test.txt"
         with self.assertRaises(file_parser.ParseError):
             file_parser.parse_batch_test_file(batch_file_path)
+
+
+sys.path.append(os.path.abspath(""))
+if __name__ == '__main__':
+    unittest.main()
