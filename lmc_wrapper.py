@@ -18,7 +18,7 @@ class LMCWrapper:
         self.batch_fp = kwargs.get('batch_fp', None)
         self.checker_fp = kwargs.get('checker_fp', None)
         self.has_graph = kwargs.get('graph', None)
-        self.has_feedback = kwargs.get('feedback', None)
+        self.feedback_fp = kwargs.get('feedback', None)
 
         self.lmc = None
         self.checker = None
@@ -137,6 +137,6 @@ class LMCWrapper:
 
     def write_feedback(self):
         """Write feedback to a txt file."""
-        if self.has_feedback is not None:
-            with open(self.has_feedback or f"feedback_{self.filename}", 'w') as f:
+        if self.feedback_fp:
+            with open(self.feedback_fp or f"feedback_{self.filename}", 'w') as f:
                 f.write(self.feedback)
