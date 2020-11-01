@@ -138,5 +138,5 @@ class LMCWrapper:
     def write_feedback(self):
         """Write feedback to a txt file."""
         if self.has_feedback is not None:
-            with open(self.feedback or f"feedback_{self.filename}", 'w') as f:
+            with open(self.has_feedback or f"feedback_{self.filename}", 'w') as f:
                 f.write(self.feedback)
