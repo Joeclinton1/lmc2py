@@ -82,7 +82,7 @@ def parse_assembly_file(filepath):
 
     # ensure that there are no more than 100 registers
     if len(assembly) > 100:
-        raise IndexError("More than 100 registers used")
+        raise IndexError("%d/100 mailboxes used. No more than 100 mailboxes is allowed." % len(assembly))
 
     # get pointers from assembly by looking for pointers targets in
     pointers = {'': ''}
