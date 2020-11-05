@@ -40,7 +40,11 @@ class LMC:
             self.address_reg = self.counter
             self.counter += 1
             instruction = self.mailboxes[self.address_reg]
-            self.opcodes[instruction[0]](int(instruction[1:]))
+            try:
+                self.opcodes[instruction[0]](int(instruction[1:]))
+            except KeyError:
+                print("Command not found: cmd: %s, full instruction: %s.\nHalted."%(instruction[0], instruction))
+                return self.inputs, self.outputs, self.num_cycles
         return self.inputs, self.outputs, self.num_cycles
 
     def reset(self):
@@ -68,7 +72,7 @@ class LMC:
         self.accumulator = (self.accumulator - n) % 1000
 
     def sto(self, x):
-        self.mailboxes[x] = str(self.accumulator)
+        self.mailboxes[x] = str(self.accumulator).zfill(3)
 
     def lda(self, x):
         self.neg_flag = 0
