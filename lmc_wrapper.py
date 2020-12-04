@@ -92,6 +92,13 @@ class LMCWrapper:
                     print("inputs: %s, expected_output: %s, output: %s" % (inputs, expected_outputs, outputs))
         self.write_feedback()
 
+        # print average and worst case number of cycles
+        average_cycles = sum(self.inputs_and_cycles.values())//len(self.inputs_and_cycles.keys())
+        worst_cycles = max(self.inputs_and_cycles.values())
+        print("Average number of cycles: %d" % average_cycles)
+        print("Worst case number of cycles: %d"%worst_cycles)
+
+        # plot graph
         if self.has_graph:
             plot.plot_graph(self.inputs_and_cycles)
 
