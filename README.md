@@ -1,6 +1,6 @@
 # lmc2py
 
-This is a python module which runs the "Little Minion Computer" .lmc and .txt files in python, to save you having to wait for it to run. The Little Man Computer is a conceptual model of a simple CPU, created by Durham professor Dr. Magnus Bordewich.
+This is a python module which runs the "Little Minion Computer" .lmc and .txt files in python, to save you having to wait for it to run. The Little Minion Computer is a conceptual model of a simple CPU, created by Durham professor Dr. Magnus Bordewich.
 
 ## Features
 - Interprets LMC assembly and .LMC files to python
